@@ -21,9 +21,7 @@ type StoredContent = {
   images: Record<string, string>;
 };
 
-const STORAGE_KEY = "portfolio-visual-edit-content-v1";
-/** 与 Vite 注入的 VITE_BUILD_ID 对比；新部署后强制从服务器拉 portfolio-content.json，避免旧 localStorage 盖住线上最新内容 */
-const BUILD_ID_STORAGE_KEY = "portfolio-visual-edit-build-id";
+const STORAGE_KEY = "portfolio-visual-edit-content-v2";
 
 const VisualEditContext = createContext<VisualEditState | null>(null);
 
@@ -97,14 +95,14 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     const hydrate = async () => {
       const buildId = import.meta.env.VITE_BUILD_ID ?? "dev";
-      const prevBuild = localStorage.getItem(BUILD_ID_STORAGE_KEY);
-      const newDeploy = prevBuild !== buildId;
+      const wantsEdit = readEditParam();
 
       async function loadFromRemote(): Promise<boolean> {
         try {
           const rawBase = import.meta.env.BASE_URL ?? "/";
           const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
-          const jsonPath = `${base}portfolio-content.json?v=${encodeURIComponent(buildId)}`;
+          const bust = `${buildId}-${Date.now()}`;
+          const jsonPath = `${base}portfolio-content.json?v=${encodeURIComponent(bust)}`;
           const response = await fetch(jsonPath, { cache: "no-store" });
           if (!response.ok) return false;
           const payload = validatePayload(await response.json());
@@ -112,14 +110,23 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
           setTexts(payload.texts);
           setImages(payload.images);
           localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-          localStorage.setItem(BUILD_ID_STORAGE_KEY, buildId);
           return true;
         } catch {
           return false;
         }
       }
 
-      if (newDeploy) {
+      // 访客：始终先拉服务器 JSON，避免旧 localStorage 盖住线上已部署内容。
+      // ?edit=1：优先用本地草稿，无草稿再拉服务器。
+      if (wantsEdit) {
+        const stored = safeParseStored(localStorage.getItem(STORAGE_KEY));
+        if (stored) {
+          setTexts(stored.texts);
+          setImages(stored.images);
+        } else {
+          await loadFromRemote();
+        }
+      } else {
         const ok = await loadFromRemote();
         if (!ok) {
           const stored = safeParseStored(localStorage.getItem(STORAGE_KEY));
@@ -128,17 +135,9 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
             setImages(stored.images);
           }
         }
-      } else {
-        const stored = safeParseStored(localStorage.getItem(STORAGE_KEY));
-        if (stored) {
-          setTexts(stored.texts);
-          setImages(stored.images);
-        } else {
-          await loadFromRemote();
-        }
       }
 
-      setEditMode(readEditParam());
+      setEditMode(wantsEdit);
       setLoaded(true);
     };
 
