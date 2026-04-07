@@ -69,7 +69,7 @@ const defaultTexts = {
   "hero.titleLine1": "将硬核科技，",
   "hero.titleLine2Prefix": "转化为清晰的",
   "hero.intro":
-    "您好，我是张明（Alex）。拥有8年资深科技行业品牌公关经验。从0到1搭建品牌认知，策划出圈传播事件，帮助硬核科技企业在喧嚣的市场中建立清晰、权威的发声阵地。",
+    "您好，我是林镕（Linrong）。拥有8年资深科技行业品牌公关经验。从0到1搭建品牌认知，策划出圈传播事件，帮助硬核科技企业在喧嚣的市场中建立清晰、权威的发声阵地。",
   "hero.name": "林镕 Linrong",
   "hero.title": "品牌公关 / Brand PR",
   "hero.meta1": "8 Years in Tech PR",
@@ -148,9 +148,9 @@ const defaultTexts = {
   "contact.description":
     "无论是寻找全职的公关一号位，还是需要经验丰富的品牌传播顾问咨询，我都时刻准备着为您提供专业洞见。",
   "contact.emailLabel": "邮件沟通",
-  "contact.emailValue": "alex.zhang@example.com",
+  "contact.emailValue": "linrong@example.com",
   "contact.linkedinLabel": "职场领英",
-  "contact.linkedinValue": "linkedin.com/in/alex-hz",
+  "contact.linkedinValue": "linkedin.com/in/linrong",
   "contact.locationLabel": "常驻坐标",
   "contact.locationValue": "中国，北京 / 上海",
   "contact.formTitle": "快速留言",
@@ -162,7 +162,7 @@ const defaultTexts = {
   "contact.formIntentPlaceholder": "请简单描述您的背景与PR需求...",
   "contact.formSubmitText": "发送消息",
 
-  "footer.copyrightName": "Alex Zhang",
+  "footer.copyrightName": "林镕 Linrong",
   "footer.copyrightSuffix": "All rights reserved.",
   "footer.tagline": "Brand & PR Strategy for Tech Innovators.",
 

@@ -45,7 +45,7 @@ const ContactSection: React.FC = () => {
                       <EditableText storageKey="contact.emailLabel" fallback="邮件沟通" className="bg-transparent" />
                     </div>
                     <div className="font-medium text-lg text-white/80 group-hover:text-white transition-colors">
-                      <EditableText storageKey="contact.emailValue" fallback="alex.zhang@example.com" className="bg-transparent" />
+                      <EditableText storageKey="contact.emailValue" fallback="linrong@example.com" className="bg-transparent" />
                     </div>
                   </div>
                 </div>
@@ -59,7 +59,7 @@ const ContactSection: React.FC = () => {
                       <EditableText storageKey="contact.linkedinLabel" fallback="职场领英" className="bg-transparent" />
                     </div>
                     <div className="font-medium text-lg text-white/80 group-hover:text-white transition-colors">
-                      <EditableText storageKey="contact.linkedinValue" fallback="linkedin.com/in/alex-hz" className="bg-transparent" />
+                      <EditableText storageKey="contact.linkedinValue" fallback="linkedin.com/in/linrong" className="bg-transparent" />
                     </div>
                   </div>
                 </div>

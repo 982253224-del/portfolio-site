@@ -40,7 +40,7 @@ const HeroSection: React.FC = () => {
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed font-medium">
               <EditableText
                 storageKey="hero.intro"
-                fallback="您好，我是张明（Alex）。拥有8年资深科技行业品牌公关经验。从0到1搭建品牌认知，策划出圈传播事件，帮助硬核科技企业在喧嚣的市场中建立清晰、权威的发声阵地。"
+                fallback="您好，我是林镕（Linrong）。拥有8年资深科技行业品牌公关经验。从0到1搭建品牌认知，策划出圈传播事件，帮助硬核科技企业在喧嚣的市场中建立清晰、权威的发声阵地。"
                 className="bg-transparent"
                 multiline
               />
@@ -68,7 +68,7 @@ const HeroSection: React.FC = () => {
                 <EditableImage
                   storageKey="hero.portrait"
                   fallbackSrc="https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&q=80&w=400&h=400"
-                  alt="Alex Portrait"
+                  alt="林镕 Linrong"
                   className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 transition-all duration-500"
                 />
                 </div>
