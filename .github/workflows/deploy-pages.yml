@@ -54,6 +54,7 @@ jobs:
         env:
           VITE_BASE: ${{ steps.base.outputs.vite_base }}
           VITE_SITE_URL: ${{ steps.base.outputs.site_url }}
+          VITE_BUILD_ID: ${{ github.sha }}
         run: npm run build
 
       - name: Upload artifact

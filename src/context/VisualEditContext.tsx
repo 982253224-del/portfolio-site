@@ -22,6 +22,8 @@ type StoredContent = {
 };
 
 const STORAGE_KEY = "portfolio-visual-edit-content-v1";
+/** 与 Vite 注入的 VITE_BUILD_ID 对比；新部署后强制从服务器拉 portfolio-content.json，避免旧 localStorage 盖住线上最新内容 */
+const BUILD_ID_STORAGE_KEY = "portfolio-visual-edit-build-id";
 
 const VisualEditContext = createContext<VisualEditState | null>(null);
 
@@ -94,26 +96,45 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
 
   useEffect(() => {
     const hydrate = async () => {
-      const stored = safeParseStored(localStorage.getItem(STORAGE_KEY));
-      if (stored) {
-        setTexts(stored.texts);
-        setImages(stored.images);
-      } else {
+      const buildId = import.meta.env.VITE_BUILD_ID ?? "dev";
+      const prevBuild = localStorage.getItem(BUILD_ID_STORAGE_KEY);
+      const newDeploy = prevBuild !== buildId;
+
+      async function loadFromRemote(): Promise<boolean> {
         try {
           const rawBase = import.meta.env.BASE_URL ?? "/";
           const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
-          const jsonPath = `${base}portfolio-content.json`;
+          const jsonPath = `${base}portfolio-content.json?v=${encodeURIComponent(buildId)}`;
           const response = await fetch(jsonPath, { cache: "no-store" });
-          if (response.ok) {
-            const payload = validatePayload(await response.json());
-            if (payload) {
-              setTexts(payload.texts);
-              setImages(payload.images);
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-            }
-          }
+          if (!response.ok) return false;
+          const payload = validatePayload(await response.json());
+          if (!payload) return false;
+          setTexts(payload.texts);
+          setImages(payload.images);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+          localStorage.setItem(BUILD_ID_STORAGE_KEY, buildId);
+          return true;
         } catch {
-          // Keep defaults when import file is unavailable.
+          return false;
+        }
+      }
+
+      if (newDeploy) {
+        const ok = await loadFromRemote();
+        if (!ok) {
+          const stored = safeParseStored(localStorage.getItem(STORAGE_KEY));
+          if (stored) {
+            setTexts(stored.texts);
+            setImages(stored.images);
+          }
+        }
+      } else {
+        const stored = safeParseStored(localStorage.getItem(STORAGE_KEY));
+        if (stored) {
+          setTexts(stored.texts);
+          setImages(stored.images);
+        } else {
+          await loadFromRemote();
         }
       }
 
