@@ -1,0 +1,23 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "src": "src/pages/Portfolio.tsx"
+    },
+    {
+      "path": "/competencies",
+      "src": "src/pages/Competencies.tsx"
+    }
+  ],
+  "components": [
+    {"name": "Header", "src": "src/components/Header.tsx"},
+    {"name": "HeroSection", "src": "src/components/HeroSection.tsx"},
+    {"name": "AboutSection", "src": "src/components/AboutSection.tsx"},
+    {"name": "SkillCard", "src": "src/components/SkillCard.tsx"},
+    {"name": "SkillsSection", "src": "src/components/SkillsSection.tsx"},
+    {"name": "ProjectCard", "src": "src/components/ProjectCard.tsx"},
+    {"name": "ProjectsSection", "src": "src/components/ProjectsSection.tsx"},
+    {"name": "ContactSection", "src": "src/components/ContactSection.tsx"},
+    {"name": "Footer", "src": "src/components/Footer.tsx"}
+  ]
+}

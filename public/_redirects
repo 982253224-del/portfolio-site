@@ -1,0 +1,2 @@
+# Netlify 等：任意路径回退到 index.html，便于若改回 BrowserRouter 时直链 /competencies 可用
+/*    /index.html   200
