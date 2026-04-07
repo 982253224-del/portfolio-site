@@ -8,8 +8,6 @@ import ContactSection from '../components/ContactSection';
 import Footer from '../components/Footer';
 
 const Portfolio: React.FC = () => {
-  console.log("Portfolio page rendering");
-  
   return (
     <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary/20 selection:text-primary">
       <Header />

@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { publicUrl } from "@/lib/publicUrl";
 
 type VisualEditState = {
+  contentReady: boolean;
+  resetLocalContent: () => void;
   editMode: boolean;
   enterEditMode: () => void;
   exitEditMode: () => void;
@@ -21,7 +23,12 @@ type StoredContent = {
   images: Record<string, string>;
 };
 
-const STORAGE_KEY = "portfolio-visual-edit-content-v2";
+const STORAGE_KEY = "portfolio-visual-edit-content-v3";
+const LEGACY_STORAGE_KEYS = [
+  "portfolio-visual-edit-content-v2",
+  "portfolio-visual-edit-content-v1",
+  "portfolio-visual-edit-build-id",
+] as const;
 
 const VisualEditContext = createContext<VisualEditState | null>(null);
 
@@ -46,6 +53,42 @@ function readEditParam(): boolean {
     if (inHash.get("edit") === "1" || inHash.get("mode") === "edit") return true;
   }
   return false;
+}
+
+/** 清除本地内容缓存后重新加载线上 JSON：?clearContent=1 或 #/…?clearContent=1 */
+function readClearContentParam(): boolean {
+  if (typeof window === "undefined") return false;
+  const fromSearch = new URLSearchParams(window.location.search);
+  if (fromSearch.get("clearContent") === "1") return true;
+  const hash = window.location.hash;
+  const qi = hash.indexOf("?");
+  if (qi >= 0) {
+    const inHash = new URLSearchParams(hash.slice(qi + 1));
+    if (inHash.get("clearContent") === "1") return true;
+  }
+  return false;
+}
+
+function stripClearContentParamAndGetHref(): string {
+  const u = new URL(window.location.href);
+  u.searchParams.delete("clearContent");
+  let h = u.hash;
+  const qi = h.indexOf("?");
+  if (qi >= 0) {
+    const pathOnly = h.slice(0, qi);
+    const params = new URLSearchParams(h.slice(qi + 1));
+    params.delete("clearContent");
+    const q = params.toString();
+    u.hash = q ? `${pathOnly}?${q}` : pathOnly;
+  }
+  return u.toString();
+}
+
+function clearAllPortfolioStorage() {
+  localStorage.removeItem(STORAGE_KEY);
+  for (const k of LEGACY_STORAGE_KEYS) {
+    localStorage.removeItem(k);
+  }
 }
 
 function updateUrl(paramsPatch: Record<string, string | null>) {
@@ -93,6 +136,12 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined" && readClearContentParam()) {
+      clearAllPortfolioStorage();
+      window.location.replace(stripClearContentParamAndGetHref());
+      return;
+    }
+
     const hydrate = async () => {
       const buildId = import.meta.env.VITE_BUILD_ID ?? "dev";
       const wantsEdit = readEditParam();
@@ -103,7 +152,7 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
           const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
           const bust = `${buildId}-${Date.now()}`;
           const jsonPath = `${base}portfolio-content.json?v=${encodeURIComponent(bust)}`;
-          const response = await fetch(jsonPath, { cache: "no-store" });
+          const response = await fetch(jsonPath, { cache: "no-store", credentials: "same-origin" });
           if (!response.ok) return false;
           const payload = validatePayload(await response.json());
           if (!payload) return false;
@@ -143,6 +192,12 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
 
     void hydrate();
   }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+    const name = texts["hero.name"]?.trim() || "林镕 Linrong";
+    document.title = `${name} · 品牌公关作品集`;
+  }, [loaded, texts]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -213,8 +268,15 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
     return true;
   };
 
+  const resetLocalContent = useCallback(() => {
+    clearAllPortfolioStorage();
+    window.location.reload();
+  }, []);
+
   const value: VisualEditState = useMemo(
     () => ({
+      contentReady: loaded,
+      resetLocalContent,
       editMode,
       enterEditMode: () => {
         setEditMode(true);
@@ -245,7 +307,7 @@ export function VisualEditProvider({ children }: { children: React.ReactNode }) 
       },
       setImage: (key, v) => setImages((prev) => ({ ...prev, [key]: v })),
     }),
-    [editMode, texts, images]
+    [editMode, loaded, texts, images, resetLocalContent]
   );
 
   return <VisualEditContext.Provider value={value}>{children}</VisualEditContext.Provider>;

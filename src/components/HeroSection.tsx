@@ -32,9 +32,14 @@ const HeroSection: React.FC = () => {
               <br />
               <EditableText storageKey="hero.titleLine2Prefix" fallback="转化为清晰的" className="bg-transparent" />
               <span className="relative whitespace-nowrap">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-600">品牌心智</span>
-                <span className="absolute -bottom-2 left-0 w-full h-3 bg-primary/10 -z-10 rounded-full"></span>
-              </span>。
+                <EditableText
+                  storageKey="hero.titleLine2Highlight"
+                  fallback="品牌心智"
+                  className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-600"
+                />
+                <span className="absolute -bottom-2 left-0 w-full h-3 bg-primary/10 -z-10 rounded-full" />
+              </span>
+              。
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed font-medium">
@@ -95,14 +100,23 @@ const HeroSection: React.FC = () => {
               </div>
 
               {/* Floating Elements corresponding to skills */}
-              <div className="absolute -top-6 -right-6 bg-background border border-border shadow-lg rounded-full px-4 py-2 text-xs font-bold text-foreground flex items-center gap-2 animate-bounce" style={{ animationDuration: '3s' }}>
-                🎙️ Media Relations
+              <div
+                className="absolute -top-6 -right-6 bg-background border border-border shadow-lg rounded-full px-4 py-2 text-xs font-bold text-foreground flex items-center gap-2 animate-bounce"
+                style={{ animationDuration: "3s" }}
+              >
+                <EditableText storageKey="hero.floating1" fallback="🎙️ 媒体关系" className="bg-transparent" />
               </div>
-              <div className="absolute -bottom-4 -left-8 bg-background border border-border shadow-lg rounded-full px-4 py-2 text-xs font-bold text-foreground flex items-center gap-2 animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
-                ✍️ Content Strategy
+              <div
+                className="absolute -bottom-4 -left-8 bg-background border border-border shadow-lg rounded-full px-4 py-2 text-xs font-bold text-foreground flex items-center gap-2 animate-bounce"
+                style={{ animationDuration: "4s", animationDelay: "1s" }}
+              >
+                <EditableText storageKey="hero.floating2" fallback="✍️ 内容策略" className="bg-transparent" />
               </div>
-              <div className="absolute top-1/2 -right-10 bg-background border border-border shadow-lg rounded-full px-4 py-2 text-xs font-bold text-foreground flex items-center gap-2 animate-bounce" style={{ animationDuration: '5s', animationDelay: '2s' }}>
-                🚨 Tech Mgt.
+              <div
+                className="absolute top-1/2 -right-10 bg-background border border-border shadow-lg rounded-full px-4 py-2 text-xs font-bold text-foreground flex items-center gap-2 animate-bounce"
+                style={{ animationDuration: "5s", animationDelay: "2s" }}
+              >
+                <EditableText storageKey="hero.floating3" fallback="🚨 科技传播" className="bg-transparent" />
               </div>
 
             </div>

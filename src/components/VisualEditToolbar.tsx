@@ -12,7 +12,8 @@ async function copyShareUrl() {
 }
 
 export default function VisualEditToolbar() {
-  const { editMode, enterEditMode, exitEditMode, save, exportJson, syncToFile, importJson } = useVisualEdit();
+  const { editMode, enterEditMode, exitEditMode, save, exportJson, syncToFile, importJson, resetLocalContent } =
+    useVisualEdit();
 
   const onPickFile = (file: File | null) => {
     if (!file) return;
@@ -113,6 +114,18 @@ export default function VisualEditToolbar() {
             className="h-10 px-4 rounded-xl border border-border bg-background font-semibold hover:bg-muted transition-colors"
           >
             导入内容
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm("将清除本机缓存的作品集内容并重新加载（与线上 JSON 对齐）。未导出的编辑会丢失，是否继续？")) {
+                resetLocalContent();
+              }
+            }}
+            className="h-10 px-3 rounded-xl border border-border bg-background text-sm font-semibold hover:bg-muted transition-colors"
+            title="也可在地址栏追加 ?clearContent=1 或 #/?clearContent=1"
+          >
+            对齐线上
           </button>
         </div>
       </div>
