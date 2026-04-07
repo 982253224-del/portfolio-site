@@ -9,7 +9,8 @@
     "dev": "vite",
     "lint": "eslint .",
     "preview": "vite preview",
-    "snapshot:content": "node scripts/build-portfolio-content.mjs"
+    "snapshot:content": "node scripts/build-portfolio-content.mjs",
+    "github:deploy": "powershell -ExecutionPolicy Bypass -File ./scripts/complete-github-deploy.ps1"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
