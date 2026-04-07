@@ -13,10 +13,25 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
+# 常见情况：新终端未加载 PATH，导致找不到 git / gh
+$extra = @(
+  "C:\Program Files\Git\bin",
+  "C:\Program Files\GitHub CLI",
+  (Join-Path ${env:ProgramFiles(x86)} "GitHub CLI")
+) | Where-Object { $_ -and (Test-Path $_) }
+foreach ($d in $extra) {
+  if ($env:Path -notlike "*$d*") { $env:Path = "$d;$env:Path" }
+}
+
 $Git = "C:\Program Files\Git\bin\git.exe"
-$Gh = Join-Path ${env:ProgramFiles} "GitHub CLI\gh.exe"
-if (-not (Test-Path $Gh)) {
-  Write-Error "GitHub CLI not found: $Gh. Install: winget install GitHub.cli"
+if (-not (Test-Path $Git)) { $Git = "git" }
+$GhExe = Join-Path ${env:ProgramFiles} "GitHub CLI\gh.exe"
+$Gh = if (Test-Path $GhExe) { $GhExe } else { "gh" }
+$ErrorActionPreference = "SilentlyContinue"
+& $Gh --version 2>&1 | Out-Null
+$ErrorActionPreference = "Stop"
+if ($LASTEXITCODE -ne 0) {
+  Write-Error "GitHub CLI not found. Install: winget install GitHub.cli"
   exit 1
 }
 

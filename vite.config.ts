@@ -52,11 +52,38 @@ function getUsedLucideIcons() {
 
 const usedLucideIcons = getUsedLucideIcons();
 
+/** 构建时注入对外绝对地址（GitHub Actions 传 VITE_SITE_URL），便于 og / 分享链接 */
+function injectPublicSiteMeta(): import("vite").Plugin {
+  return {
+    name: "inject-public-site-meta",
+    transformIndexHtml(html) {
+      const publicSite = process.env.VITE_SITE_URL?.trim();
+      if (!publicSite) return html;
+      const origin = publicSite.endsWith("/") ? publicSite : `${publicSite}/`;
+      const ogImage = new URL("og-image.png", origin).href;
+      const canonical = origin.replace(/\/+$/, "/");
+      let out = html.replace(
+        /<meta\s+property="og:image"\s+content="[^"]*"\s*\/>/,
+        `<meta property="og:image" content="${ogImage}" />`
+      );
+      if (!out.includes('property="og:url"')) {
+        out = out.replace(
+          "</head>",
+          `  <meta property="og:url" content="${canonical}" />\n  <link rel="canonical" href="${canonical}" />\n</head>`
+        );
+      }
+      return out;
+    },
+  };
+}
+
 // https://vite.dev/config/
 // 部署到子路径（如 GitHub Pages `https://user.github.io/repo/`）时设置环境变量：VITE_BASE=/repo/
+// 对外分享绝对地址：VITE_SITE_URL=https://user.github.io/repo/（CI 已自动传入）
 export default defineConfig({
   base: process.env.VITE_BASE ?? "/",
   plugins: [
+    injectPublicSiteMeta(),
     react(),
     tailwindcss(),
     AutoImport({
